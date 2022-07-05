@@ -1,0 +1,52 @@
+[
+  {
+    "ApiId": "/providers/microsoft.powerapps/apis/shared_sharepointonline",
+    "CdpRevision": {
+      "BaseUrl": "/",
+      "LastChangedTimeString": "2022-06-02T17:39:24.1330000Z",
+      "RevisionNumber": 1
+    },
+    "ConnectedDataSourceInfoNameMapping": {
+      "{Attachments}": "Attachments",
+      "{Attachments}@odata.type": "{Attachments} ({Attachments}@odata.type)",
+      "{FilenameWithExtension}": "File name with extension",
+      "{FullPath}": "Full Path",
+      "{HasAttachments}": "Has attachments",
+      "{Identifier}": "Identifier",
+      "{IsFolder}": "IsFolder",
+      "{Link}": "Link to item",
+      "{ModerationComment}": "Comments associated with the content approval of this list item",
+      "{ModerationStatus}": "Content approval status",
+      "{Name}": "Name",
+      "{Path}": "Folder path",
+      "{Thumbnail}": "Thumbnail",
+      "{TriggerWindowEndToken}": "Trigger Window End Token",
+      "{TriggerWindowStartToken}": "Trigger Window Start Token",
+      "{VersionNumber}": "Version number",
+      "Author": "Created By",
+      "Author#Claims": "Created By Claims",
+      "CheckIn": "CheckInHours",
+      "CheckOut": "CheckOutHours",
+      "ComplianceAssetId": "Compliance Asset Id",
+      "Created": "Created",
+      "Editor": "Modified By",
+      "Editor#Claims": "Modified By Claims",
+      "ID": "ID",
+      "ID_Registration": "ID_Registration",
+      "Modified": "Modified",
+      "ParticipantFirstName": "ParticipantFirstName",
+      "ParticipantLastName": "ParticipantLastName",
+      "ProgramName": "ID_ProgramName",
+      "ProgramStartDate": "ProgramStartDate",
+      "SignatureCheckIn": "SignatureCheckIn",
+      "SignatureCheckOut": "SignatureCheckOut",
+      "Title": "Title"
+    },
+    "DatasetName": "https://mofp.sharepoint.com/",
+    "EncodeDataset": true,
+    "IsSampleData": false,
+    "IsWritable": true,
+    "Name": "DB_Attendance",
+    "Type": "ConnectedDataSourceInfo"
+  }
+]

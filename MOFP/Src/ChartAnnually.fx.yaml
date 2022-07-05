@@ -1,0 +1,404 @@
+ChartAnnually As screen:
+    Fill: =RGBA(255,255,255,1)
+    LoadingSpinnerColor: =RGBA(211, 66, 9, 1)
+    OnVisible: =
+
+    Button3 As button:
+        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        DisabledFill: =RGBA(244, 244, 244, 1)
+        Fill: =RGBA(230, 230, 230, 0.5)
+        FocusedBorderColor: =ColorFade(Self.Fill, -75%)
+        FontWeight: =FontWeight.Semibold
+        Height: =318
+        HoverColor: =RGBA(255, 255, 255, 1)
+        HoverFill: =//ColorFade(RGBA(211, 66, 9, 1), -20%)
+        Size: =15
+        Text: =""
+        Width: =449
+        X: =540
+        Y: =440
+        ZIndex: =1
+
+    Rectangle2_7 As rectangle:
+        BorderColor: =RGBA(255, 255, 255, 0.51)
+        Fill: =RGBA(245, 157, 35, 1)
+        Height: =73
+        Width: =1024.00
+        X: =0.00
+        ZIndex: =3
+
+    Logo_1 As image:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+        DisabledFill: =RGBA(244, 244, 244, 1)
+        Height: =80
+        Image: ='mofp-logo-colour-dark'
+        OnSelect: =Navigate(Main_Screen)
+        Width: =108.70
+        X: =23.99
+        ZIndex: =4
+
+    Label8 As label:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        FontWeight: =FontWeight.Bold
+        Size: =18
+        Text: ="Attendance"
+        Width: =170
+        X: =451
+        Y: =16
+        ZIndex: =5
+
+    Gallery4 As gallery.galleryVertical:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Height: =295
+        Items: |+
+            =AddColumns(
+            GroupBy(Filter(DB_Attendance, Year(Title) = Dropdown1.Selected.Result), "ProgramName","GroupedItems"),
+            "Count Value",CountRows(GroupedItems))
+            
+        Layout: =Layout.Vertical
+        TemplateSize: =48
+        Width: =465
+        X: =535
+        Y: =140
+        ZIndex: =13
+
+        ProgramName As label:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            Color: =RGBA(0, 0, 0, 1)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =35
+            OnSelect: =Select(Parent)
+            Text: |-
+                =//ClearCollect(At, GroupBy(DB_Attendance, "ProgramName" ))//LookUp(DB_Programs, ID = ThisItem.ID_ProgramName, Title
+                LookUp(DB_Programs, ID = ThisItem.ProgramName , Title)
+            Width: =337
+            X: =4
+            Y: =12
+            ZIndex: =1
+
+        Label10 As label:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            Color: =RGBA(0, 0, 0, 1)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =36
+            OnSelect: =Select(Parent)
+            Size: =13
+            Text: |-
+                =//ThisItem.'Count Value'
+                ThisItem.'Count Value'
+            Width: =63
+            X: =391
+            Y: =11
+            ZIndex: =2
+
+        Separator1_1 As rectangle:
+            BorderColor: =RGBA(168, 0, 0, 1)
+            Fill: =RGBA(166, 166, 166, 1)
+            Height: =1
+            OnSelect: =Select(Parent)
+            Width: =450
+            X: =0.00
+            Y: =47
+            ZIndex: =3
+
+    CompositeColumnChart3 As group:
+        Height: =5
+        Width: =5
+        X: =40
+        Y: =40
+        ZIndex: =14
+
+        Title5 As label:
+            Align: =Align.Center
+            Color: =RGBA(0, 0, 0, 1)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            Height: =14
+            Text: =Dropdown1.Selected.Result
+            Width: =458
+            X: =536
+            Y: =449
+            ZIndex: =10
+
+        ColumnChart3 As barChart:
+            BorderColor: =RGBA(56, 56, 56, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            GridStyle: =GridStyle.All
+            Height: =220
+            ItemColorSet: =[RGBA(49, 130, 93, 1),RGBA(48,166,103, 1), RGBA(94,193,108,1), RGBA(246,199,144,1), RGBA(247,199,114,1), RGBA(247,180,91,1), RGBA(246,143,100,1), RGBA(212,96,104,1), RGBA(148, 110, 176, 1), RGBA(118, 154, 204, 1), RGBA(96, 197, 234, 1)]
+            Items: =Gallery4.AllItems
+            ItemsGap: =15
+            Width: =458
+            X: =535
+            Y: =463
+            ZIndex: =11
+
+        Legend3 As legend:
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            Height: =88
+            ItemColorSet: =ColumnChart3.ItemColorSet
+            Items: |
+                =Gallery4.AllItems.ProgramName
+                //ColumnChart3.Selected.ID_ProgramName
+            Width: =366
+            X: =589
+            Y: =670
+            ZIndex: =12
+
+    Dropdown1 As dropdown:
+        BorderColor: =RGBA(245, 157, 35, 1)
+        ChevronBackground: =RGBA(245, 157, 35, 1)
+        ChevronDisabledBackground: =RGBA(166, 166, 166, 1)
+        ChevronDisabledFill: =RGBA(244, 244, 244, 1)
+        ChevronHoverBackground: =ColorFade(RGBA(211, 66, 9, 1), -20%)
+        ChevronHoverFill: =RGBA(255, 255, 255, 1)
+        Default: =
+        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        DisabledFill: =RGBA(244, 244, 244, 1)
+        Height: =41
+        HoverColor: =RGBA(0, 0, 0, 1)
+        HoverFill: =RGBA(255, 211, 205, 1)
+        Items: =Distinct(DB_Attendance,Year(Title))
+        PressedColor: =RGBA(255, 255, 255, 1)
+        PressedFill: =RGBA(131, 24, 75, 1)
+        SelectionFill: =RGBA(245, 157, 35, 1)
+        Size: =13
+        Width: =153
+        X: =836
+        Y: =93
+        ZIndex: =15
+
+    Label8_4 As label:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        FontWeight: =FontWeight.Bold
+        Size: =18
+        Text: ="Attendance - Annual"
+        Width: =269
+        X: =542
+        Y: =93
+        ZIndex: =16
+
+    Label8_5 As label:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        FontWeight: =FontWeight.Bold
+        Size: =18
+        Text: ="Attendance - Daily"
+        Width: =269
+        X: =131
+        Y: =90
+        ZIndex: =17
+
+    Dropdown1_3 As dropdown:
+        BorderColor: =RGBA(245, 157, 35, 1)
+        ChevronBackground: =RGBA(245, 157, 35, 1)
+        ChevronDisabledBackground: =RGBA(166, 166, 166, 1)
+        ChevronDisabledFill: =RGBA(244, 244, 244, 1)
+        ChevronHoverBackground: =ColorFade(RGBA(211, 66, 9, 1), -20%)
+        ChevronHoverFill: =RGBA(255, 255, 255, 1)
+        Default: =
+        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        DisabledFill: =RGBA(244, 244, 244, 1)
+        HoverColor: =RGBA(0, 0, 0, 1)
+        HoverFill: =RGBA(255, 211, 205, 1)
+        Items: =Sort(Distinct(DB_Programs, Title).Result, Result)
+        PressedColor: =RGBA(255, 255, 255, 1)
+        PressedFill: =RGBA(131, 24, 75, 1)
+        SelectionFill: =RGBA(245, 157, 35, 1)
+        Size: =13
+        Width: =354
+        X: =135
+        Y: =140
+        ZIndex: =18
+
+    Dropdown1_4 As dropdown:
+        BorderColor: =RGBA(245, 157, 35, 1)
+        ChevronBackground: =RGBA(245, 157, 35, 1)
+        ChevronDisabledBackground: =RGBA(166, 166, 166, 1)
+        ChevronDisabledFill: =RGBA(244, 244, 244, 1)
+        ChevronHoverBackground: =ColorFade(RGBA(211, 66, 9, 1), -20%)
+        ChevronHoverFill: =RGBA(255, 255, 255, 1)
+        Default: =
+        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        DisabledFill: =RGBA(244, 244, 244, 1)
+        HoverColor: =RGBA(0, 0, 0, 1)
+        HoverFill: =RGBA(255, 211, 205, 1)
+        Items: |+
+            =Distinct(
+                Filter(
+                    DB_Attendance,
+                    ProgramName = Text(First(
+                        Filter(
+                            DB_Programs,
+                            Title = Dropdown1_3.Selected.Result
+                        )
+                    ).ID)
+                ), 
+                Title
+            )
+            
+        PressedColor: =RGBA(255, 255, 255, 1)
+        PressedFill: =RGBA(131, 24, 75, 1)
+        SelectionFill: =RGBA(245, 157, 35, 1)
+        Size: =13
+        Width: =354
+        X: =135
+        Y: =193
+        ZIndex: =19
+
+    "Gallery5_1 As gallery.'BrowseLayout_Vertical_TwoTextOneImageVariant_ver4.0'":
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Height: =453
+        Items: |-
+            =If( Dropdown1_3.Selected.Result = Blank() && Dropdown1_4.Selected.Result = Blank(),
+            
+                Blank()
+                ,
+                Filter(DB_Attendance, ProgramName = Text(LookUp(DB_Programs, Title = Dropdown1_3.Selected.Result).ID)
+                &&
+                Title = Dropdown1_4.Selected.Result
+                
+                )  
+                
+            )
+        Layout: =Layout.Vertical
+        TemplatePadding: =0
+        TemplateSize: =45
+        Width: =459
+        X: =30
+        Y: =253
+        ZIndex: =20
+
+        Image5_1 As image:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            DisabledFill: =RGBA(244, 244, 244, 1)
+            Height: =45
+            OnSelect: =Select(Parent)
+            Visible: =false
+            Width: =128
+            X: =16
+            ZIndex: =1
+
+        Title3_1 As label:
+            Color: =RGBA(0, 0, 0, 1)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =Self.Size * 1.8
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            Size: =15
+            Text: =LookUp(DB_Registration, ID = ThisItem.ID_Registration, FirstName & " " & LastName)
+            VerticalAlign: =VerticalAlign.Top
+            Width: =Parent.TemplateWidth - Image5_1.Width - 104
+            X: =16
+            Y: =16
+            ZIndex: =2
+
+        Separator4_1 As rectangle:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            Fill: =RGBA(166, 166, 166, 1)
+            Height: =1
+            OnSelect: =Select(Parent)
+            Width: =Parent.TemplateWidth
+            Y: =44
+            ZIndex: =5
+
+    Label9_2 As label:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        FontWeight: =FontWeight.Semibold
+        Height: =45
+        Size: =15
+        Text: |-
+            ="Total: "
+        Width: =101
+        X: =226
+        Y: =720
+        ZIndex: =21
+
+    Label9_3 As label:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        FontWeight: =FontWeight.Semibold
+        Height: =45
+        Size: =15
+        Text: =CountRows(Gallery5_1.AllItems)
+        Width: =101
+        X: =292
+        Y: =720
+        ZIndex: =22
+
+    Label9_4 As label:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        FontWeight: =FontWeight.Semibold
+        Height: =45
+        Size: =15
+        Text: |-
+            ="Program:"
+        Width: =101
+        X: =30
+        Y: =133
+        ZIndex: =23
+
+    Label9_5 As label:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        FontWeight: =FontWeight.Semibold
+        Height: =45
+        Size: =15
+        Text: |-
+            ="Date:"
+        Width: =101
+        X: =30
+        Y: =180
+        ZIndex: =24
+
+    Rectangle3 As rectangle:
+        BorderColor: =RGBA(245, 157, 35, 1)
+        Fill: =RGBA(219, 219, 219, 1)
+        Height: =650
+        Width: =2
+        X: =515
+        Y: =100
+        ZIndex: =25
+
+    bt_RegisterTop_4 As button:
+        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        DisabledFill: =RGBA(244, 244, 244, 1)
+        Fill: =RGBA(255, 255, 255, 0.28)
+        FocusedBorderColor: =ColorFade(Self.Fill, -75%)
+        FontWeight: =FontWeight.Semibold
+        Height: =52
+        HoverColor: =RGBA(255, 191, 0, 1)
+        HoverFill: =ColorFade(RGBA(255, 191, 0, 1), -20%)
+        OnSelect: =Back();
+        PaddingRight: =3.75
+        PaddingTop: =3.75
+        Size: =15
+        Text: ="Back"
+        Width: =149
+        X: =851
+        Y: =10
+        ZIndex: =26
+

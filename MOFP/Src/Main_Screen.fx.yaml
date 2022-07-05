@@ -1,0 +1,653 @@
+Main_Screen As screen:
+    Fill: =
+    LoadingSpinnerColor: =RGBA(211, 66, 9, 1)
+    OnVisible: =
+
+    "Registration_Gallery As gallery.'BrowseLayout_Vertical_TwoTextVariant_ver4.0'":
+        BorderColor: =RGBA(230, 230, 230, 1)
+        Fill: =RGBA(255, 255, 255, 1)
+        Height: =611
+        Items: |
+            =
+            If( cd_ProgramName.Selected.Result = Blank() && txt_searchField.Text = Blank(),
+            
+                SortByColumns(Filter(DB_Registration, ID_ProgramDates in Filter(DB_ProgramsDates, ProgramEndDate >= Today()).ID), "FirstName", Ascending ),
+            
+            SortByColumns(
+                Filter(
+                    DB_Registration,
+                        (StartsWith(
+                            FirstName,
+                            txt_searchField.Text
+                        ) || StartsWith(
+                            LastName,
+                            txt_searchField.Text
+                        )) 
+            
+                    && ( Title = Text(First(
+                                        Filter(
+                                            DB_Programs,
+                                            Title = cd_ProgramName.Selected.Result
+                                            )
+                                    ).ID) || cd_ProgramName.Selected.Result = Blank()
+                        )
+            
+                    && ( ID_ProgramDates = LookUp(DB_ProgramsDates,Title = Text(LookUp(DB_Programs, Title = cd_ProgramName.Selected.Result).ID) && ProgramStartDate = dd_StartDate.Selected.Result,ID) || dd_StartDate.Selected.Result = Blank()
+                       )
+                    && ID_ProgramDates in Filter(DB_ProgramsDates, ProgramEndDate >= Today()).ID
+                    && Status = Status_Toggle.Value
+                   
+                )  
+            , "FirstName", Ascending)
+            )
+        Layout: =Layout.Vertical
+        ShowNavigation: =true
+        ShowScrollbar: =false
+        TemplatePadding: =0
+        TemplateSize: =Min(104, Self.Height - 60)
+        Width: =976
+        X: =26
+        Y: =156
+        ZIndex: =1
+
+        ParentsName As label:
+            Align: =Align.Justify
+            Color: =RGBA(0, 0, 0, 1)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =36
+            OnSelect: =Select(Parent)
+            Text: =ThisItem.FirstName&" "&ThisItem.LastName
+            VerticalAlign: =VerticalAlign.Top
+            Width: =346
+            X: =124
+            Y: =20
+            ZIndex: =1
+
+        NextArrow1 As icon.ChevronRight:
+            AccessibleLabel: =Self.Tooltip
+            BorderColor: =RGBA(131, 24, 75, 1)
+            Color: =RGBA(128, 128, 128, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            DisabledColor: =RGBA(244, 244, 244, 1)
+            Height: =60
+            Icon: =Icon.Edit
+            OnSelect: |-
+                =EditForm('add/edit_form2');
+                Navigate('Add/Edit_Screen2')
+            PaddingBottom: =10
+            PaddingLeft: =10
+            PaddingRight: =7.50
+            PaddingTop: =7.50
+            TabIndex: =0
+            Tooltip: ="View item details"
+            Width: =44.98
+            X: =916.80
+            Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+            ZIndex: =3
+
+        Separator1 As rectangle:
+            BorderColor: =RGBA(230, 230, 230, 1)
+            Fill: =RGBA(230, 230, 230, 1)
+            Height: =1
+            OnSelect: =Select(Parent)
+            Width: =976.02
+            X: =0.00
+            Y: =Parent.TemplateHeight - 1
+            ZIndex: =4
+
+        Label3 As label:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            Color: =RGBA(0, 0, 0, 1)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            OnSelect: =Select(Parent)
+            Size: =12
+            Text: |-
+                ="Participant:"
+            Width: =113
+            Y: =18
+            ZIndex: =5
+
+        Label4 As label:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            Color: =RGBA(0, 0, 0, 1)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            Height: =37
+            OnSelect: =Select(Parent)
+            Size: =12
+            Text: |-
+                =If (IsBlank(ThisItem.ChildrenName), "Program Name:", "Children Name:")
+            Width: =137
+            Y: =53
+            ZIndex: =6
+
+        ChildName As label:
+            Color: =RGBA(0, 0, 0, 1)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =37
+            OnSelect: =Select(Parent)
+            Text: =If (IsBlank(ThisItem.ChildrenName), LookUp(DB_Programs, ID = Value(ThisItem.Title), Title), ThisItem.ChildrenName)
+            VerticalAlign: =VerticalAlign.Top
+            Width: =422
+            X: =124
+            Y: =53
+            ZIndex: =7
+
+        checkbox_CheckIn As checkbox:
+            BorderColor: =RGBA(0, 0, 0, 0)
+            CheckboxBorderColor: =RGBA(128, 128, 128, 1)
+            CheckmarkFill: =Green
+            Color: =
+            Default: |
+                =If(IsBlank(LookUp(DB_Attendance,ID_Registration=ThisItem.ID And Title = Text(Today(), "mm/dd/yyyy"),ID)),
+                false,
+                true
+                )
+            Height: =48
+            HoverColor: =RGBA(131, 24, 75, 1)
+            OnCheck: |-
+                =//Set(varIdProgram, LookUp(DB_Programs, Title = cd_ProgramName.Selected.Result).ID);
+                //If(cd_ProgramName.Selected.Result = "Play & Learn", 
+                If (LookUp(DB_Programs, ID = Value(ThisItem.Title)).CheckOut,
+                    NewForm(SignatureCheckIn_Form);
+                    Navigate(Signature_Screen_CheckIn);
+                ,
+                    If(
+                        IsBlank(
+                            LookUp(
+                                DB_Attendance,
+                                ID_Registration = ThisItem.ID And Title = Text(Today(), "mm/dd/yyyy"),
+                                ID
+                            )
+                        ),
+                        Collect(
+                            DB_Attendance,
+                            {
+                                Title: Text( Today(), "mm/dd/yyyy"),
+                                /*ProgramStartDate: ThisItem.StartDate,
+                                ParticipantFirstName: ThisItem.FirstName,
+                                ParticipantLastName: ThisItem.LastName,*/
+                                ID_Registration: ThisItem.ID,
+                                ProgramName: ThisItem.Title
+                            }
+                        );
+                        Refresh(DB_Attendance),
+                        Notify(
+                            ThisItem.FirstName & " " & ThisItem.LastName & " " & "Already Check-In",
+                            NotificationType.Error
+                        )
+                    )
+                )
+            OnSelect: =Refresh(DB_Attendance)
+            OnUncheck: |-
+                =RemoveIf(DB_Attendance, ID=LookUp(DB_Attendance, ID_Registration = ThisItem.ID && Title = Text(Today(), "mm/dd/yyyy")).ID);
+                Refresh(DB_Attendance)
+            Size: =13
+            Text: =If (checkbox_CheckIn.Value, "Check-In", "Absent")
+            Width: =141.68
+            X: |
+                =If ((LookUp(DB_Programs, ID = Value(ThisItem.Title)).CheckOut) && (checkbox_CheckIn.Value = true), 663, 730)
+            Y: =If ((LookUp(DB_Programs, ID = Value(ThisItem.Title)).CheckOut) && checkbox_CheckIn.Value = true ,6, 20)
+            ZIndex: =8
+
+        Label3_1 As label:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            Color: =RGBA(0, 0, 0, 1)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            OnSelect: =Select(Parent)
+            Size: =12
+            Text: |-
+                ="Start Date:"
+            Width: =97
+            X: =446
+            Y: =18
+            ZIndex: =9
+
+        ParentsName_1 As label:
+            Align: =Align.Justify
+            Color: =RGBA(0, 0, 0, 1)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =34
+            OnSelect: =Select(Parent)
+            Text: |-
+                =//ThisItem.StartDate
+                
+                    Text (LookUp(
+                        DB_ProgramsDates,
+                        ID = ThisItem.ID_ProgramDates,ProgramStartDate     
+                    ), "mm/dd/yyyy" )
+                   
+                
+                //ThisItem.ID_ProgramName
+            VerticalAlign: =VerticalAlign.Top
+            Width: =127
+            X: =537
+            Y: =19
+            ZIndex: =10
+
+        ParentsName_2 As label:
+            Align: =Align.Justify
+            Color: =RGBA(0, 0, 0, 1)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =32
+            OnSelect: =Select(Parent)
+            Text: |-
+                =//ThisItem.StartDate
+                
+                    Text(LookUp(
+                        DB_ProgramsDates,
+                        ID = ThisItem.ID_ProgramDates,ProgramEndDate     
+                    ), "mm/dd/yyyy")
+                   
+                
+                //ThisItem.ID_ProgramName
+            VerticalAlign: =VerticalAlign.Top
+            Width: =132
+            X: =536
+            Y: =52
+            ZIndex: =11
+
+        Label3_2 As label:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            Color: =RGBA(0, 0, 0, 1)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            OnSelect: =Select(Parent)
+            Size: =12
+            Text: |-
+                ="End Date:"
+            Width: =97
+            X: =452
+            Y: =50
+            ZIndex: =12
+
+        checkbox_CheckOut As checkbox:
+            BorderColor: =RGBA(128, 128, 128, 1)
+            CheckboxBorderColor: =RGBA(128, 128, 128, 1)
+            CheckmarkFill: =Green
+            Color: =
+            Default: |
+                =If(IsBlank(LookUp(DB_Attendance,ID_Registration=ThisItem.ID && Title=Text(Today(), "mm/dd/yyyy") && CheckOut <> Blank(),ID)),
+                false,
+                true
+                )
+            Height: =48
+            HoverColor: =RGBA(131, 24, 75, 1)
+            OnCheck: |-
+                =If (LookUp(DB_Programs, ID = ThisItem.Title).CheckOut,
+                    EditForm(SignatureCheckOut_Form);
+                    Navigate(Signature_Screen_CheckOut);
+                ,
+                
+                    If(
+                        IsBlank(
+                            LookUp(
+                                DB_Attendance,
+                                ID_Registration = ThisItem.ID And Title = Text(Today(), "mm/dd/yyyy"),
+                                ID
+                            )
+                        ),
+                        Collect(
+                            DB_Attendance,
+                            {
+                                Title: Text( Today(), "mm/dd/yyyy"),
+                                ProgramStartDate: ThisItem.StartDate,
+                                ParticipantFirstName: ThisItem.FirstName,
+                                ParticipantLastName: ThisItem.LastName,
+                                ID_Registration: ThisItem.ID,
+                                ProgramName: ThisItem.Title
+                            }
+                        );
+                        Refresh(DB_Attendance),
+                        Notify(
+                            ThisItem.FirstName & " " & ThisItem.LastName & " " & "Already Check-In",
+                            NotificationType.Error
+                        )
+                    )
+                )
+            OnSelect: =Refresh(DB_Attendance)
+            OnUncheck: |-
+                =/*RemoveIf(DB_Attendance, ID=LookUp(DB_Attendance, ID_Registration = ThisItem.ID && Title = Text(Today(), "mm/dd/yyyy")).ID);*/
+                UpdateIf(DB_Attendance, ID=LookUp(DB_Attendance, ID_Registration = ThisItem.ID && Title = Text(Today(), "mm/dd/yyyy")).ID, {SignatureCheckOut: Blank(), CheckOut: Blank()});
+                Refresh(DB_Attendance)
+            Size: =13
+            Text: ="Check-Out"
+            Visible: |+
+                =If ((LookUp(DB_Programs, ID = ThisItem.Title).CheckOut) && checkbox_CheckIn.Value = true  , true, false)
+                
+            Width: =141
+            X: =790
+            Y: =6
+            ZIndex: =13
+
+        Image3 As image:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            DisabledFill: =RGBA(244, 244, 244, 1)
+            Height: =46
+            Image: |-
+                =Substitute(LookUp(DB_Attendance, Title = Text(Today(),"mm/dd/yyyy") /*&& ID_ProgramName = ThisItem.ID_ProgramName*/ && ID_Registration = ThisItem.ID).SignatureCheckIn, """","")
+                
+                //DB_Attendance, ID=LookUp(DB_Attendance, ID_Registration = ThisItem.ID && Title = Text(Today(), "mm/dd/yyyy")).ID
+            OnSelect: =Select(Parent)
+            Visible: |-
+                =If(checkbox_CheckIn.Value = true, true, false)
+                //If(checkbox_CheckIn.Value = true, LookUp(DB_Attendance, Title = Today() && ID_ProgramName = ThisItem.ID_ProgramName && ID_Registration = ThisItem.ID
+            Width: =108
+            X: =670
+            Y: =44
+            ZIndex: =14
+
+        Image3_1 As image:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            DisabledFill: =RGBA(244, 244, 244, 1)
+            Height: =46
+            Image: |-
+                =Substitute(LookUp(DB_Attendance, Title = Text(Today(),"mm/dd/yyyy") /*&& ID_ProgramName = ThisItem.ID_ProgramName*/ && ID_Registration = ThisItem.ID).SignatureCheckOut, """","")
+                
+                //DB_Attendance, ID=LookUp(DB_Attendance, ID_Registration = ThisItem.ID && Title = Text(Today(), "mm/dd/yyyy")).ID
+            OnSelect: =Select(Parent)
+            Visible: |-
+                =If(checkbox_CheckOut.Value = true, true, false)
+                //If(checkbox_CheckIn.Value = true, LookUp(DB_Attendance, Title = Today() && ID_ProgramName = ThisItem.ID_ProgramName && ID_Registration = ThisItem.ID
+            Width: =129
+            X: =787
+            Y: =41
+            ZIndex: =15
+
+        Label7 As label:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            Color: =RGBA(0, 0, 0, 1)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            OnSelect: =Select(Parent)
+            Size: =9
+            Text: =LookUp(DB_Attendance, Title = Text(Today(),"mm/dd/yyyy") /*&& ID_ProgramName = ThisItem.ID_ProgramName*/ && ID_Registration = ThisItem.ID).CheckIn
+            Width: =93
+            X: =664
+            Y: =64
+            ZIndex: =16
+
+        Label7_1 As label:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            Color: =RGBA(0, 0, 0, 1)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            OnSelect: =Select(Parent)
+            Size: =9
+            Text: =LookUp(DB_Attendance, Title = Text(Today(),"mm/dd/yyyy") /*&& ID_ProgramName = ThisItem.ID_ProgramName*/ && ID_Registration = ThisItem.ID).CheckOut
+            Width: =93
+            X: =800
+            Y: =64
+            ZIndex: =17
+
+    dd_StartDate As dropdown:
+        BorderColor: =RGBA(245, 157, 35, 1)
+        ChevronBackground: =RGBA(245, 157, 35, 1)
+        ChevronDisabledBackground: =RGBA(166, 166, 166, 1)
+        ChevronDisabledFill: =RGBA(244, 244, 244, 1)
+        ChevronHoverBackground: =ColorFade(RGBA(211, 66, 9, 1), -20%)
+        ChevronHoverFill: =RGBA(255, 255, 255, 1)
+        Default: ="Please Select"
+        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        DisabledFill: =RGBA(244, 244, 244, 1)
+        DisplayMode: = DisplayMode.Edit
+        Height: =41
+        HoverColor: =RGBA(0, 0, 0, 1)
+        HoverFill: =LightGray
+        Italic: =true
+        Items: |+
+            =Distinct(
+                Filter(
+                    DB_ProgramsDates,
+                    Title = Text(First(
+                        Filter(
+                            DB_Programs,
+                            Title = cd_ProgramName.Selected.Result
+                        )
+                    ).ID),
+                    ProgramEndDate >= Today()
+                ), 
+                ProgramStartDate
+            )
+            
+        OnSelect: |+
+            =false
+            
+        PressedColor: =RGBA(255, 255, 255, 1)
+        PressedFill: =RGBA(131, 24, 75, 1)
+        SelectionFill: =RGBA(245, 157, 35, 1)
+        Size: =14
+        Tooltip: ="Select a Program"
+        Width: =170
+        X: =732
+        Y: =115
+        ZIndex: =2
+
+    Label1 As label:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        Size: =12
+        Text: |-
+            ="Program Name:"
+        Width: =162
+        X: =345
+        Y: =80
+        ZIndex: =3
+
+    Label2 As label:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        Size: =12
+        Text: |-
+            ="Start Date:"
+        Width: =119
+        X: =730
+        Y: =80
+        ZIndex: =4
+
+    Rectangle2 As rectangle:
+        BorderColor: =RGBA(255, 255, 255, 0.51)
+        Fill: =RGBA(245, 157, 35, 1)
+        Height: =73
+        Width: =1024.00
+        X: =0.00
+        ZIndex: =5
+
+    bt_RegisterTop As button:
+        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        DisabledFill: =RGBA(244, 244, 244, 1)
+        Fill: =RGBA(255, 255, 255, 0.28)
+        FocusedBorderColor: =ColorFade(Self.Fill, -75%)
+        FontWeight: =FontWeight.Semibold
+        Height: =52
+        HoverColor: =RGBA(255, 191, 0, 1)
+        HoverFill: =ColorFade(RGBA(255, 191, 0, 1), -20%)
+        OnSelect: =NewForm('add/edit_form2');Navigate('Add/Edit_Screen2')
+        PaddingRight: =3.75
+        PaddingTop: =3.75
+        Size: =15
+        Text: ="Registration"
+        Width: =149
+        X: =851
+        Y: =10
+        ZIndex: =6
+
+    bt_Program As button:
+        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        DisabledFill: =RGBA(244, 244, 244, 1)
+        Fill: =RGBA(255, 255, 255, 0.28)
+        FocusedBorderColor: =ColorFade(Self.Fill, -75%)
+        FontWeight: =FontWeight.Semibold
+        Height: =52
+        HoverColor: =RGBA(255, 191, 0, 1)
+        HoverFill: =ColorFade(RGBA(255, 191, 0, 1), -20%)
+        OnSelect: =Navigate(Program_Screen)
+        PaddingRight: =3.75
+        PaddingTop: =3.75
+        Size: =15
+        Text: ="Programs"
+        Width: =152
+        X: =535
+        Y: =10
+        ZIndex: =7
+
+    cd_ProgramName As combobox:
+        BorderColor: =RGBA(245, 157, 35, 1)
+        ChevronBackground: =RGBA(245, 157, 35, 1)
+        ChevronDisabledBackground: =RGBA(166, 166, 166, 1)
+        ChevronDisabledFill: =RGBA(244, 244, 244, 1)
+        ChevronHoverBackground: =ColorFade(RGBA(211, 66, 9, 1), -20%)
+        ChevronHoverFill: =RGBA(255, 255, 255, 1)
+        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        DisabledFill: =RGBA(244, 244, 244, 1)
+        DisplayFields: =["Result"]
+        FocusedBorderThickness: =2
+        Height: =41
+        HoverColor: =RGBA(0, 0, 0, 1)
+        HoverFill: =LightGray
+        InputTextPlaceholder: ="Select Program"
+        IsSearchable: =false
+        Items: |-
+            =Sort(Distinct(DB_Programs, Title).Result, Result)
+            
+            //Distinct(DB_Registration, ID_ProgramName).Result
+        OnChange: |
+            =Set(varIdProgram, LookUp(DB_Programs, Title = cd_ProgramName.Selected.Result).ID);
+        PaddingRight: =3.75
+        PaddingTop: =3.75
+        PressedColor: =RGBA(255, 255, 255, 1)
+        PressedFill: =RGBA(131, 24, 75, 1)
+        SearchFields: =["Result"]
+        SearchItems: =[]
+        SelectionFill: =RGBA(245, 157, 35, 1)
+        SelectMultiple: =false
+        Size: =14
+        Width: =360
+        X: =345
+        Y: =115
+        ZIndex: =8
+
+    Timer1 As timer:
+        AutoStart: =true
+        Duration: =3000
+        Fill: =RGBA(211, 66, 9, 1)
+        Height: =42
+        HoverColor: =RGBA(255, 255, 255, 1)
+        HoverFill: =ColorFade(RGBA(211, 66, 9, 1), -20%)
+        OnTimerEnd: =Refresh(DB_Attendance)
+        Repeat: =true
+        Visible: =false
+        Width: =55
+        X: =16
+        Y: =20
+        ZIndex: =9
+
+    bt_Attendance As button:
+        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        DisabledFill: =RGBA(244, 244, 244, 1)
+        Fill: =RGBA(255, 255, 255, 0.28)
+        FocusedBorderColor: =ColorFade(Self.Fill, -75%)
+        FontWeight: =FontWeight.Semibold
+        Height: =52
+        HoverColor: =RGBA(255, 191, 0, 1)
+        HoverFill: =ColorFade(RGBA(255, 191, 0, 1), -20%)
+        OnSelect: |+
+            =/*ClearCollect(
+                mySolution,
+                DropColumns(
+                    AddColumns(
+                        GroupBy(DB_Attendance,"ProgramName","GroupedItems"),
+                    "Count Value",CountRows(GroupedItems)
+                    ),
+                "GroupedItems"
+                )
+            );*/
+            Navigate(ChartAnnually)
+            
+        PaddingRight: =3.75
+        PaddingTop: =3.75
+        Size: =15
+        Text: ="Report"
+        Width: =123
+        X: =707
+        Y: =10
+        ZIndex: =10
+
+    txt_searchField As text:
+        BorderColor: =RGBA(245, 157, 35, 1)
+        BorderThickness: =2
+        Color: =RGBA(0, 0, 0, 1)
+        Default: =Blank()
+        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        DisabledFill: =RGBA(244, 244, 244, 1)
+        FocusedBorderThickness: =4
+        Height: =41
+        HoverBorderColor: =RGBA(245, 157, 35, 1)
+        HoverColor: =RGBA(0, 0, 0, 1)
+        HoverFill: =RGBA(255, 211, 205, 1)
+        Size: =13
+        Width: =290
+        X: =30
+        Y: =115
+        ZIndex: =11
+
+    Label1_2 As label:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        Size: =12
+        Text: |-
+            ="Search:"
+        Width: =162
+        X: =30
+        Y: =80
+        ZIndex: =12
+
+    Image1 As image:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+        DisabledFill: =RGBA(244, 244, 244, 1)
+        Height: =80
+        Image: ='mofp-logo-colour-dark'
+        OnSelect: =Navigate(Main_Screen)
+        Width: =108.70
+        X: =14.99
+        ZIndex: =13
+
+    Status_Toggle As toggleSwitch:
+        BorderColor: =RGBA(0, 0, 0, 0)
+        Color: =RGBA(0, 0, 0, 1)
+        Default: =true
+        FalseFill: =RGBA(128, 130, 133, 1)
+        HandleFill: =RGBA(255, 255, 255, 1)
+        Height: =37
+        ShowLabel: =false
+        Size: =13
+        Tooltip: ="Active Participant"
+        TrueFill: =RGBA(245, 157, 35, 1)
+        Width: =70
+        X: =932
+        Y: =119
+        ZIndex: =14
+
+    Label2_1 As label:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        Size: =12
+        Text: ="Active"
+        Width: =61
+        X: =932
+        Y: =80
+        ZIndex: =15
+

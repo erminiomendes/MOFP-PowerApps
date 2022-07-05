@@ -1,0 +1,254 @@
+"Program_Screen As screen.'tabletLayout_HeaderAndGallery_ver3.0'":
+    Fill: =RGBA(255,255,255,1)
+    LoadingSpinnerColor: =RGBA(211, 66, 9, 1)
+
+    "Programs_Gallery_List As gallery.'BrowseLayout_Vertical_TwoTextOneImageVariant_ver4.0'":
+        BorderColor: =RGBA(128, 128, 128, 1)
+        Height: =638
+        Items: =Sort(DB_Programs, Title)
+        Layout: =Layout.Vertical
+        ShowNavigation: =true
+        ShowScrollbar: =false
+        TemplatePadding: =0
+        TemplateSize: =82
+        Width: =960
+        X: =23.99
+        Y: =108
+        ZIndex: =3
+
+        Image2 As image:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            DisabledFill: =RGBA(244, 244, 244, 1)
+            Height: =128
+            Image: =
+            OnSelect: =Select(Parent)
+            Visible: =false
+            Width: =95.95
+            X: =11.99
+            Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+            ZIndex: =1
+
+        Title2 As label:
+            Color: =RGBA(0, 0, 0, 1)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =45
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0.00
+            PaddingTop: =0.00
+            Size: =20
+            Text: =ThisItem.Title
+            VerticalAlign: =VerticalAlign.Top
+            Width: =574
+            X: =11
+            Y: =26
+            ZIndex: =2
+
+        NextArrow2 As icon.ChevronRight:
+            AccessibleLabel: =Self.Tooltip
+            BorderColor: =varColors.Colors.BorderColor
+            Color: =RGBA(128, 128, 128, 1)
+            DisabledBorderColor: =RGBA(128, 128, 128, 1)
+            DisabledColor: =RGBA(244, 244, 244, 1)
+            FocusedBorderColor: =RGBA(128, 128, 128, 1)
+            Height: =60
+            Icon: =Icon.Edit
+            OnSelect: |-
+                =/*EditForm('Add/Edit_Prog_Form');
+                Navigate('Add/Edit_Prog_Screen_old');
+                */
+                Set(varMode,"Edit");
+                Select(Parent);
+                Navigate('Add/Edit_Program_Screen');
+            PaddingBottom: =10
+            PaddingLeft: =10
+            PaddingRight: =7.50
+            PaddingTop: =7.50
+            TabIndex: =0
+            Tooltip: ="View item details"
+            Width: =44.98
+            X: =804
+            Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+            ZIndex: =4
+
+        Separator2 As rectangle:
+            BorderColor: =RGBA(128, 128, 128, 1)
+            Fill: =RGBA(131, 24, 75, 1)
+            Height: =1
+            OnSelect: =Select(Parent)
+            Width: =961.03
+            X: =0.00
+            Y: =Parent.TemplateHeight - 1
+            ZIndex: =5
+
+        Icon3 As icon.Add:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            Color: =RGBA(128, 128, 128, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            DisabledColor: =RGBA(244, 244, 244, 1)
+            Height: =30
+            Icon: =Icon.Settings
+            OnSelect: |-
+                =Select(Parent);
+                Navigate('Add/Edit_group_Screen')
+                /*Set(varCurrentItem,ThisItem); Navigate(newGroup_Screen,ScreenTransition.Cover);If(var*/
+            Width: =30
+            X: =716
+            Y: =25
+            ZIndex: =11
+
+        Icon1 As icon.Trash:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            Color: =RGBA(128, 128, 128, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            DisabledColor: =RGBA(244, 244, 244, 1)
+            Height: =30
+            Icon: =Icon.Trash
+            OnSelect: |
+                =If(
+                    IsBlank(
+                        LookUp(
+                            DB_Registration,
+                            ID_ProgramName = Text(ThisItem.ID)
+                        ).ID_ProgramName
+                    ),
+                
+                    //don't exist
+                    Remove(
+                        DB_Programs,
+                        Filter(
+                            DB_Programs,
+                            ID = ThisItem.ID
+                        )
+                    );
+                    Notify(
+                        "Program Deleted",
+                        NotificationType.Success,
+                        0
+                    ),
+                
+                    //exist
+                    Notify(
+                        "Cannot Delete due to Registration",
+                        NotificationType.Error,
+                        0
+                    )
+                )
+            Width: =30
+            X: =911
+            Y: =24
+            ZIndex: =12
+
+    Rectangle2_2 As rectangle:
+        BorderColor: =RGBA(255, 255, 255, 0.51)
+        Fill: =RGBA(245, 157, 35, 1)
+        Height: =73
+        Width: =1024.00
+        X: =0.00
+        ZIndex: =4
+
+    Image1_2 As image:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+        DisabledFill: =RGBA(244, 244, 244, 1)
+        Height: =80
+        Image: ='mofp-logo-colour-dark'
+        OnSelect: =Navigate(Main_Screen)
+        Width: =108.70
+        X: =23.99
+        ZIndex: =5
+
+    Button2_2 As button:
+        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        DisabledFill: =RGBA(244, 244, 244, 1)
+        Fill: =RGBA(255, 255, 255, 0.28)
+        FocusedBorderColor: =ColorFade(Self.Fill, -75%)
+        FontWeight: =FontWeight.Semibold
+        Height: =52
+        HoverColor: =RGBA(255, 191, 0, 1)
+        HoverFill: =ColorFade(RGBA(255, 191, 0, 1), -20%)
+        OnSelect: =Back();
+        PaddingRight: =3.75
+        PaddingTop: =3.75
+        Size: =15
+        Text: ="Back"
+        Width: =135
+        X: =849
+        Y: =10
+        ZIndex: =6
+
+    Button2_3 As button:
+        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        DisabledFill: =RGBA(244, 244, 244, 1)
+        Fill: =RGBA(255, 255, 255, 0.28)
+        FocusedBorderColor: =ColorFade(Self.Fill, -75%)
+        FontWeight: =FontWeight.Semibold
+        Height: =52
+        HoverColor: =RGBA(255, 191, 0, 1)
+        HoverFill: =ColorFade(RGBA(255, 191, 0, 1), -20%)
+        OnSelect: |
+            =/*NewForm(Form_newProgram); Navigate(Add_newProgram_Screen)*/
+            Set(varMode,"New");
+            Navigate('Add/Edit_Program_Screen');
+        PaddingRight: =3.75
+        PaddingTop: =3.75
+        Size: =15
+        Text: ="New Program"
+        Width: =216
+        X: =599
+        Y: =10
+        ZIndex: =7
+
+    Label5 As label:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        Height: =28
+        Size: =10
+        Text: ="Manage Group"
+        Width: =117
+        X: =703
+        Y: =80
+        ZIndex: =8
+
+    lb_Edit As label:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        Height: =37
+        Size: =10
+        Text: ="Edit"
+        Width: =46
+        X: =836
+        Y: =77
+        ZIndex: =9
+
+    Label5_1 As label:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        Height: =25
+        Size: =10
+        Text: ="Delete"
+        Width: =83
+        X: =922
+        Y: =83
+        ZIndex: =10
+
+    Label5_2 As label:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        Height: =28
+        Size: =10
+        Text: ="Program Name"
+        Width: =209
+        X: =32
+        Y: =80
+        ZIndex: =11
+

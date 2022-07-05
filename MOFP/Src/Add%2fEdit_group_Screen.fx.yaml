@@ -1,0 +1,641 @@
+"'Add/Edit_group_Screen' As screen":
+    Fill: =RGBA(255,255,255,1)
+    LoadingSpinnerColor: =RGBA(211, 66, 9, 1)
+
+    Rectangle2_6 As rectangle:
+        BorderColor: =RGBA(255, 255, 255, 0.51)
+        Fill: =RGBA(245, 157, 35, 1)
+        Height: =73
+        Width: =1024.00
+        X: =0.00
+        ZIndex: =1
+
+    "Gallery1 As gallery.'BrowseLayout_Vertical_TwoTextVariant_ver4.0'":
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Height: =73
+        Items: =Programs_Gallery_List.Selected
+        Layout: =Layout.Vertical
+        TemplatePadding: =0
+        TemplateSize: =73
+        Width: =943
+        X: =32
+        Y: =2
+        ZIndex: =2
+
+        Title4 As label:
+            Color: =RGBA(0, 0, 0, 1)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =38
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            Size: =20
+            Text: |
+                =//LookUp(DB_Programs, Text(ID) = Text(ThisItem.Title), Title)
+            VerticalAlign: =VerticalAlign.Top
+            Width: =41
+            X: =104
+            Y: =12
+            ZIndex: =1
+
+        ID_Program As label:
+            Color: =RGBA(0, 0, 0, 1)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            Height: =26
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            Size: =18
+            Text: =ThisItem.ID
+            VerticalAlign: =VerticalAlign.Top
+            Visible: =false
+            Width: =37
+            X: =269
+            Y: =24
+            ZIndex: =2
+
+        Subtitle2_1 As label:
+            Color: =RGBA(0, 0, 0, 1)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =26
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            Size: =18
+            Text: =ThisItem.Title
+            VerticalAlign: =VerticalAlign.Top
+            Width: =294
+            X: =382
+            Y: =24
+            ZIndex: =5
+
+    Gallery2 As gallery.galleryVertical:
+        BorderColor: =RGBA(255, 255, 255, 1)
+        BorderStyle: =BorderStyle.None
+        BorderThickness: =2
+        DisplayMode: |+
+            =DisplayMode.Edit
+            
+        Fill: =RGBA(255,255,255,1)
+        Height: =461
+        Items: |
+            =Sort(Filter(DB_ProgramsDates, Title = ID_Program.Text), ProgramEndDate, SortOrder.Descending )
+        Layout: =Layout.Vertical
+        TemplatePadding: =0
+        TemplateSize: =69
+        Width: =959
+        X: =31
+        Y: =248
+        ZIndex: =3
+
+        Icon7 As icon.Save:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            Color: |+
+                =If( DateValue(DP_endDate) >= Today(), 
+                 RGBA(131, 24, 75, 1), RGBA(166,166,166,1)
+                )
+                
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            DisabledColor: =RGBA(244, 244, 244, 1)
+            Height: =40
+            Icon: =Icon.Edit
+            OnSelect: |-
+                =If( DateValue(DP_endDate) >= Today(),         
+                        Notify(
+                        "Program Updated Successfully",
+                        NotificationType.Success
+                    ), 
+                        Notify(
+                        "Program already ended. Cannot edit",
+                        NotificationType.Error
+                    )
+                )
+            Width: =40
+            X: =826
+            Y: =17
+            ZIndex: =3
+
+        Icon7_1 As icon.Save:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            Color: |+
+                =If( DateValue(DP_endDate) >= Today(), 
+                 RGBA(131, 24, 75, 1), RGBA(166,166,166,1)
+                )
+                
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            DisabledColor: =RGBA(244, 244, 244, 1)
+            Height: =40
+            Icon: =Icon.Trash
+            OnSelect: |+
+                =If( DateValue(DP_endDate) >= Today(), 
+                
+                   If(
+                        IsBlank(
+                            LookUp(
+                                DB_Registration,
+                                ID_ProgramDates = Text(ThisItem.ID)
+                            ).Title
+                        ),
+                
+                        //if don't exist registration for this group can be delete
+                        Remove(
+                            DB_ProgramsDates,
+                            Filter(
+                                DB_ProgramsDates,
+                                ID = ThisItem.ID
+                            )
+                        );
+                        Notify(
+                            "Program Deleted",
+                            NotificationType.Success,
+                            0
+                        ),
+                
+                        //exist
+                        Notify(
+                            "Cannot Delete due to Registration",
+                            NotificationType.Error,
+                            0
+                        )
+                    ),
+                
+                
+                   /* Notify(
+                    "Program Deleted Successfully",
+                    NotificationType.Success
+                    ),*/ 
+                
+                 
+                
+                    Notify(
+                    "Program already ended. Cannot Delete",
+                    NotificationType.Error
+                    )
+                )
+                
+                
+            Width: =40
+            X: =896
+            Y: =16
+            ZIndex: =4
+
+        DP_startDate As datepicker:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            CalendarHeaderFill: =RGBA(211, 66, 9, 1)
+            Color: =RGBA(0, 0, 0, 1)
+            DefaultDate: =ThisItem.ProgramStartDate
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            DisabledFill: =RGBA(244, 244, 244, 1)
+            DisplayMode: |-
+                =If( DateValue(DP_endDate) >= Today(), 
+                DisplayMode.Edit,
+                DisplayMode.Disabled)
+            HoverDateFill: =RGBA(255, 211, 205, 1)
+            IconBackground: =RGBA(211, 66, 9, 1)
+            OnChange: |-
+                =Patch(DB_ProgramsDates,ThisItem,{ProgramStartDate:DP_startDate.SelectedDate});
+            OnSelect: =Select(Parent)
+            PaddingBottom: =
+            PaddingLeft: =5
+            PaddingRight: =
+            PaddingTop: =
+            SelectedDateFill: =RGBA(211, 66, 9, 1)
+            Width: =342
+            X: =29
+            Y: =16
+            ZIndex: =6
+
+        DP_endDate As datepicker:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            CalendarHeaderFill: =RGBA(211, 66, 9, 1)
+            Color: =RGBA(0, 0, 0, 1)
+            DefaultDate: =ThisItem.ProgramEndDate
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            DisabledFill: =RGBA(244, 244, 244, 1)
+            DisplayMode: |-
+                =If( DateValue(DP_endDate) >= Today(), 
+                DisplayMode.Edit,
+                DisplayMode.Disabled)
+            Height: =41
+            HoverDateFill: =RGBA(255, 211, 205, 1)
+            IconBackground: =RGBA(211, 66, 9, 1)
+            OnChange: |-
+                =Patch(DB_ProgramsDates,ThisItem,{ProgramEndDate:DP_endDate.SelectedDate});
+            OnSelect: =Select(Parent)
+            PaddingBottom: =
+            PaddingLeft: =5
+            PaddingRight: =
+            SelectedDateFill: =RGBA(211, 66, 9, 1)
+            Width: =339
+            X: =433
+            Y: =16
+            ZIndex: =7
+
+    Button6 As button:
+        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        DisabledFill: =RGBA(244, 244, 244, 1)
+        Fill: =RGBA(211, 66, 9, 1)
+        FontWeight: =FontWeight.Semibold
+        HoverColor: =RGBA(255, 255, 255, 1)
+        HoverFill: =ColorFade(RGBA(211, 66, 9, 1), -20%)
+        OnSelect: =Back();
+        Size: =15
+        Text: ="Back"
+        X: =423
+        Y: =711
+        ZIndex: =4
+
+    Image1_5 As image:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+        DisabledFill: =RGBA(244, 244, 244, 1)
+        Height: =80
+        Image: ='mofp-logo-colour-dark'
+        OnSelect: =Navigate(Main_Screen)
+        Width: =108.70
+        X: =33.73
+        ZIndex: =5
+
+    Form3 As form:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        DataSource: =DB_ProgramsDates
+        DefaultMode: =FormMode.New
+        Fill: =RGBA(245, 245, 245, 1)
+        Height: =96
+        Item: =Defaults(DB_ProgramsDates)
+        Width: =959
+        X: =31
+        Y: =112
+        ZIndex: =6
+
+        Title_DataCard6 As typedDataCard.textualEditCard:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="Title"
+            Default: =ThisItem.Title
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: =DataSourceInfo([@DB_ProgramsDates],DataSourceInfo.DisplayName,"Title")
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            MaxLength: =DataSourceInfo([@DB_ProgramsDates], DataSourceInfo.MaxLength, "Title")
+            Required: =true
+            Update: =DataCardValue30.Text
+            Visible: =false
+            Width: =319
+            X: =2
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey35 As label:
+                AutoHeight: =true
+                Color: =RGBA(131, 24, 75, 1)
+                DisabledColor: =RGBA(166, 166, 166, 1)
+                Height: =34
+                Size: =13
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue30 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                BorderThickness: =2
+                Color: =RGBA(0, 0, 0, 1)
+                Default: =ID_Program.Text
+                DelayOutput: =true
+                DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                DisabledColor: =RGBA(166, 166, 166, 1)
+                DisabledFill: =RGBA(244, 244, 244, 1)
+                DisplayMode: =Parent.DisplayMode
+                FocusedBorderThickness: =4
+                HoverBorderColor: =RGBA(131, 24, 75, 1)
+                HoverColor: =RGBA(0, 0, 0, 1)
+                HoverFill: =RGBA(255, 211, 205, 1)
+                MaxLength: =Parent.MaxLength
+                PaddingLeft: =5
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Size: =13
+                Tooltip: =Parent.DisplayName
+                Visible: =false
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey35.Y + DataCardKey35.Height + 5
+                ZIndex: =2
+
+            ErrorMessage35 As label:
+                AutoHeight: =true
+                Color: =RGBA(168, 0, 0, 1)
+                DisabledColor: =RGBA(166, 166, 166, 1)
+                FontWeight: =FontWeight.Semibold
+                Height: =10
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue30.Y + DataCardValue30.Height
+                ZIndex: =3
+
+            StarVisible35 As label:
+                Align: =Align.Center
+                Color: =RGBA(131, 24, 75, 1)
+                DisabledColor: =RGBA(166, 166, 166, 1)
+                Height: =DataCardKey35.Height
+                Size: =13
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey35.Y
+                ZIndex: =4
+
+        ProgramStartDate_DataCard4 As typedDataCard.dateEditCard:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="StartDate"
+            Default: =
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: =DataSourceInfo([@DB_ProgramsDates],DataSourceInfo.DisplayName,"StartDate")
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            Required: =false
+            Update: =DP_newGroupStartDate.SelectedDate
+            Width: =400
+            X: =0
+            Y: =0
+            ZIndex: =11
+
+            DataCardKey14 As label:
+                AutoHeight: =true
+                Color: =RGBA(131, 24, 75, 1)
+                DisabledColor: =RGBA(166, 166, 166, 1)
+                Height: =34
+                Size: =13
+                Text: =Parent.DisplayName
+                Visible: =false
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DP_newGroupStartDate As datepicker:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                CalendarHeaderFill: =RGBA(211, 66, 9, 1)
+                Color: =RGBA(0, 0, 0, 1)
+                DefaultDate: =
+                DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                DisabledColor: =RGBA(166, 166, 166, 1)
+                DisabledFill: =RGBA(244, 244, 244, 1)
+                DisplayMode: =Parent.DisplayMode
+                EndYear: =Year(Today())+100
+                HoverDateFill: =RGBA(255, 211, 205, 1)
+                IconBackground: =RGBA(211, 66, 9, 1)
+                InputTextPlaceholder: =
+                IsEditable: =true
+                PaddingBottom: =0
+                PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                SelectedDateFill: =RGBA(211, 66, 9, 1)
+                StartYear: =2021
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =25
+                ZIndex: =2
+
+            ErrorMessage14 As label:
+                AutoHeight: =true
+                Color: =RGBA(168, 0, 0, 1)
+                DisabledColor: =RGBA(166, 166, 166, 1)
+                FontWeight: =FontWeight.Semibold
+                Height: =10
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DP_newGroupStartDate.Y + DP_newGroupStartDate.Height
+                ZIndex: =3
+
+            StarVisible14 As label:
+                Align: =Align.Center
+                Color: =RGBA(131, 24, 75, 1)
+                DisabledColor: =RGBA(166, 166, 166, 1)
+                Height: =DataCardKey14.Height
+                Size: =13
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey14.Y
+                ZIndex: =4
+
+        ProgramEndDate_DataCard4 As typedDataCard.dateEditCard:
+            BorderColor: =RGBA(131, 24, 75, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="EndDate"
+            Default: =ThisItem.ProgramEndDate
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: =DataSourceInfo([@DB_ProgramsDates],DataSourceInfo.DisplayName,"EndDate")
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            Required: =false
+            Update: =DP_newGroupEndDate.SelectedDate
+            Width: =400
+            X: =1
+            Y: =0
+            ZIndex: =11
+
+            DataCardKey15 As label:
+                AutoHeight: =true
+                Color: =RGBA(131, 24, 75, 1)
+                DisabledColor: =RGBA(166, 166, 166, 1)
+                Height: =34
+                Size: =13
+                Text: =Parent.DisplayName
+                Visible: =false
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DP_newGroupEndDate As datepicker:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                CalendarHeaderFill: =RGBA(211, 66, 9, 1)
+                Color: =RGBA(0, 0, 0, 1)
+                DefaultDate: =
+                DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                DisabledColor: =RGBA(166, 166, 166, 1)
+                DisabledFill: =RGBA(244, 244, 244, 1)
+                DisplayMode: =Parent.DisplayMode
+                EndYear: =Year(Today())+100
+                HoverDateFill: =RGBA(255, 211, 205, 1)
+                IconBackground: =RGBA(211, 66, 9, 1)
+                InputTextPlaceholder: =/*If(IsBlank(Self.SelectedDate), Text(Date(2001,12,31), Self.Format, Self.Language))*/
+                IsEditable: =true
+                PaddingBottom: =0
+                PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                SelectedDateFill: =RGBA(211, 66, 9, 1)
+                StartYear: =2021
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =25
+                ZIndex: =2
+
+            ErrorMessage15 As label:
+                AutoHeight: =true
+                Color: =RGBA(168, 0, 0, 1)
+                DisabledColor: =RGBA(166, 166, 166, 1)
+                FontWeight: =FontWeight.Semibold
+                Height: =10
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DP_newGroupEndDate.Y + DP_newGroupEndDate.Height
+                ZIndex: =3
+
+            StarVisible15 As label:
+                Align: =Align.Center
+                Color: =RGBA(131, 24, 75, 1)
+                DisabledColor: =RGBA(166, 166, 166, 1)
+                Height: =DataCardKey15.Height
+                Size: =13
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey15.Y
+                ZIndex: =4
+
+    Icon6 As icon.Save:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(131, 24, 75, 1)
+        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+        DisabledColor: =RGBA(244, 244, 244, 1)
+        Height: =40
+        Icon: =Icon.Save
+        OnSelect: |-
+            =If(
+                (DP_newGroupEndDate.SelectedDate < DP_newGroupStartDate.SelectedDate) ,
+                    Notify(
+                    "End date must be later than start date",
+                    NotificationType.Information),
+                SubmitForm(Form3)
+            );
+        Width: =42
+        X: =895
+        Y: =134
+        ZIndex: =7
+
+    "'start date new' As label":
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        FontWeight: =FontWeight.Bold
+        Size: =13
+        Text: ="Start Date"
+        X: =54
+        Y: =78
+        ZIndex: =8
+
+    "'end date new' As label":
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        FontWeight: =FontWeight.Bold
+        Size: =13
+        Text: ="End Date"
+        X: =455
+        Y: =78
+        ZIndex: =9
+
+    "'start date' As label":
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        FontWeight: =FontWeight.Bold
+        Size: =13
+        Text: ="Start Date"
+        X: =54
+        Y: =221
+        ZIndex: =10
+
+    "'end date' As label":
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        FontWeight: =FontWeight.Bold
+        Size: =13
+        Text: ="End Date"
+        X: =455
+        Y: =221
+        ZIndex: =11
+
+    edit As label:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        FontWeight: =FontWeight.Bold
+        Size: =13
+        Text: ="Edit"
+        Width: =51
+        X: =856
+        Y: =221
+        ZIndex: =12
+
+    delete As label:
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        FontWeight: =FontWeight.Bold
+        Size: =13
+        Text: ="Delete"
+        Width: =68
+        X: =909
+        Y: =221
+        ZIndex: =13
+
+    "'save new group' As label":
+        BorderColor: =RGBA(131, 24, 75, 1)
+        Color: =RGBA(0, 0, 0, 1)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        FontWeight: =FontWeight.Bold
+        Size: =13
+        Text: ="Save New Group"
+        Width: =178
+        X: =846
+        Y: =78
+        ZIndex: =14
+

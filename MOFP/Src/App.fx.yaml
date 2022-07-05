@@ -1,0 +1,18 @@
+App As appinfo:
+    BackEnabled: =false
+    OnStart: |-
+        =Set(varColors,
+            {
+                Colors:
+                {
+                    Fill: RGBA(245, 157, 35, 1),
+                    Color: White,
+                    ChevronFill: RGBA(245, 157, 35, 1),
+                    BorderStyle: RGBA(245, 157, 35, 1),
+                    CheckboxBackgroundFill: RGBA(245, 157, 35, 1),
+                    BorderColor: RGBA(245, 157, 35, 1),
+                    HoverColor: RGBA(245, 157, 35, 0.5)
+                }
+            }   
+        )  
+
