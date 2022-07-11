@@ -20,3 +20,4 @@ This app can be used in all browsers and be able to download as a mobile app
 - MS SharePoint (Database)
 - MS Power Automate (Automation)
 - MS PowerApps (Attendance App)
+- MS Power BI (Reports)
